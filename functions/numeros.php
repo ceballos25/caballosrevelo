@@ -1,12 +1,12 @@
 <?php
-require_once('./config/Database.php'); // Incluir la función de conexión actualizada
+require_once  '../config/database.php'; // Incluir la función de conexión actualizada
 
 function getNumeros($page = 1, $limit = 29) {
     $offset = ($page - 1) * $limit;
 
     try {
         // Conectarse a la base de datos usando PDO
-        $pdo = getDatabaseConnection();
+        $pdo = getDatabaseConnection();        
 
         // Preparar consulta SQL para obtener números paginados
         $stmt = $pdo->prepare("SELECT * FROM numeros_disponibles LIMIT :limit OFFSET :offset");

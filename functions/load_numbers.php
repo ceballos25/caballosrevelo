@@ -1,17 +1,14 @@
 <?php
 
 // Configuración de la base de datos
-$host = 'localhost';
-$dbname = 'revelos';
-$username = 'root';
-$password = '';
+require_once  '../config/database.php';
 
 // Número de elementos por página
 $itemsPerPage = 50;
 
 try {
     // Conexión a la base de datos usando PDO
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $pdo = getDatabaseConnection();
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Obtiene el número de página actual de la solicitud GET, por defecto es 1

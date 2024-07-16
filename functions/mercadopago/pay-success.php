@@ -1,7 +1,10 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 date_default_timezone_set('America/Bogota');
 // Incluir el archivo de configuración de la base de datos
-require_once('../../config/Database.php');
+require_once  '../../config/database.php';
 
 require '../../vendor/autoload.php'; // Incluye la biblioteca PHPMailer
 //enviamos en correo con los parametros correspondientes
@@ -91,7 +94,9 @@ function insertarNumerosVendidos($idVenta, $numerosSeleccionados)
         }
     } catch (PDOException $e) {
         // Manejar cualquier error de PDO aquí
-        //echo "Error al insertar números vendidos: " . $e->getMessage();
+        echo "Error al insertar números vendidos: " . $e->getMessage();
+        exit(" Estimado usuario, hubo un error con su pedido, por favor contacte nuestra linea de WhatsApp. Error 0001");
+
     }
 
     // Cerrar la conexión
@@ -116,6 +121,8 @@ function actualizarEstadoNumeros($numerosSeleccionados)
     } catch (PDOException $e) {
         // Manejar cualquier error de PDO aquí
         echo "Error al actualizar estado de números disponibles: " . $e->getMessage();
+        exit("Estimado usuario, hubo un error con su pedido, por favor contacte nuestra linea de WhatsApp. Error 0002");
+
     }
 
     // Cerrar la conexión
@@ -125,7 +132,7 @@ function actualizarEstadoNumeros($numerosSeleccionados)
 // Verificar si se ha enviado el formulario usando el método GET
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
     // Sanitizar y obtener los datos del formulario (Ajusta según los nombres de tus campos)
-    $nombre = sanitizeInput($_GET["nombre"]);
+    $nombreCompleto = sanitizeInput($_GET["nombre"]);
     $correo = $_GET["correo"];
     $celular = sanitizeInput($_GET["celular"]);
     $departamento = sanitizeInput($_GET["departamento"]);
@@ -151,7 +158,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                                                      VALUES (:nombre_cliente, :celular_cliente, :correo_cliente, :departamento_cliente, :ciudad_cliente)");
 
             // Ejecutar la consulta para insertar el nuevo cliente
-            $stmtInsertCliente->bindParam(":nombre_cliente", $nombre);
+            $stmtInsertCliente->bindParam(":nombre_cliente", $nombreCompleto);
             $stmtInsertCliente->bindParam(":celular_cliente", $celular);
             $stmtInsertCliente->bindParam(":correo_cliente", $correo);
             $stmtInsertCliente->bindParam(":departamento_cliente", $departamento);
@@ -193,7 +200,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         if (!empty($numerosSeleccionados)) {
             insertarNumerosVendidos($idVenta, $numerosSeleccionados);
             actualizarEstadoNumeros($numerosSeleccionados);
-            enviarCorreo($codigoTransaccion, $fecha_venta, $nombre, $totalPagar, $correo, $numerosSeleccionados);
+            enviarCorreo($codigoTransaccion, $fecha_venta, $nombreCompleto, $totalPagar, $correo, $numerosSeleccionados);
         }
 
         // Cerrar la conexión
@@ -203,15 +210,15 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     } catch (PDOException $e) {
         // Manejar errores de PDO
         echo "Error al ejecutar la consulta: " . $e->getMessage();
+        exit("Estimado usuario, hubo un error con su pedido, por favor contacte nuestra linea de WhatsApp. Error 0003");
     }
 } else {
     // Si no se envió el formulario por el método GET, podrías redirigir o mostrar un mensaje de error.
-    //echo "No se recibieron datos del formulario.";
-    exit();
+    exit("Estimado usuario, hubo un error con su pedido, por favor contacte nuestra linea de WhatsApp. Error 004");    
 }
 
 
-function enviarCorreo($codigoTransaccion, $fecha_venta, $nombre, $totalPagar, $correo, $numerosSeleccionados) {
+function enviarCorreo($codigoTransaccion, $fecha_venta, $nombreCompleto, $totalPagar, $correo, $numerosSeleccionados) {
 
     $mail = new PHPMailer(true);
     
@@ -229,6 +236,7 @@ function enviarCorreo($codigoTransaccion, $fecha_venta, $nombre, $totalPagar, $c
         // Configuración del correo
         $mail->setFrom('contacto@caballosrevelo.com', 'Caballos Revelo');
         $mail->addAddress($correo);
+        $mail->addBCC('contacto@caballosrevelo.com', 'Copia oculta');
         $mail->isHTML(true);
         $mail->Subject = 'Confirmación de Compra #' . $codigoTransaccion;
 
@@ -238,7 +246,7 @@ function enviarCorreo($codigoTransaccion, $fecha_venta, $nombre, $totalPagar, $c
         $body = ob_get_clean();
 
         // Reemplazar los placeholders con los valores dinámicos
-        $body = str_replace('%CLIENTE%', $nombre, $body);
+        $body = str_replace('%CLIENTE%', $nombreCompleto, $body);
         $body = str_replace('%NUMERO_ORDEN%', $codigoTransaccion, $body);
         $body = str_replace('%FECHA%', $fecha_venta, $body);
         $body = str_replace('%TOTAL%', $totalPagar, $body);
@@ -257,6 +265,8 @@ function enviarCorreo($codigoTransaccion, $fecha_venta, $nombre, $totalPagar, $c
         //echo 'Correo enviado correctamente';
     } catch (Exception $e) {
         //echo "Error al enviar el correo: {$mail->ErrorInfo}";
+        exit("Estimado usuario, hubo un error con su pedido, por favor contacte nuestra linea de WhatsApp. Error 0004");
+
     }
 }
 

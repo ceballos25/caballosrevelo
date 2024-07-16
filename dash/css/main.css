@@ -1,0 +1,153 @@
+/* boton de */
+.pay-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #00b34b; /* Color de fondo */
+    color: white; /* Color del texto */
+    font-size: 16px; /* Tamaño de la fuente */
+    text-align: center; /* Alineación del texto */
+    cursor: pointer; /* Cambio de cursor al pasar el ratón */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Borde redondeado */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+    transition: background-color 0.3s, transform 0.2s; /* Transiciones suaves */
+
+    /* Estilos adicionales para efecto hover */
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.pay-button:hover {
+    background-color: #45a049; /* Cambio de color de fondo al pasar el ratón */
+    transform: translateY(-2px); /* Efecto de levantamiento */
+}
+
+.available-number {
+    background-color: #f0f8ff;
+    border: 1px solid #ced4da;
+    border-radius: 50%;
+    margin: 5px;
+    padding: 9px;
+    font-size: 1rem;
+    width: 48px;
+    height: 48px;
+    text-align: center;
+    line-height: 28px;
+    color: #333;
+    font-weight: 500;
+    transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative; /* Para el pseudo-elemento */
+}
+
+.available-number:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: scale(1.1);
+}
+
+.available-number:active {
+    background-color: #cce5ff;
+    color: #003d80;
+}
+
+/* Estilos para el número vendido */
+.sold-number {
+    background-color: #dcdcdc;
+    color: #999;
+    cursor: not-allowed;
+    position: relative;
+}
+
+.sold-number::after {
+    content: "X";
+    color: #FF6700;
+    font-size: 1.5rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-weight: 600;
+    transform: translate(-50%, -50%);
+}
+
+
+.selected-number{
+    background-color: #00b34b;
+    color: #fff;
+}
+
+#ticketNumber {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px; /* Espacio entre los números */
+}
+
+/* reservado */
+.reserved-number {
+    background-color: #dcdcdc;
+    color: #999;
+    cursor: not-allowed;
+    position: relative;
+}
+
+.reserved-number::after {
+    content: "X";
+    color: #000000;
+    font-size: 1.5rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-weight: 600;
+    transform: translate(-50%, -50%);
+}
+
+
+/* status */
+
+.status-container {
+    padding: 20px; /* Opcional: agrega espacio alrededor del contenedor */
+}
+
+.status-item {
+    display: flex;
+    align-items: center; /* Alinea verticalmente la bolita con el texto */
+    gap: 10px; /* Espacio entre la bolita y el texto */
+}
+
+.disponible, .reservado, .vendido {
+    background-color: #f0f8ff; /* Color de fondo común */
+    border: 1px solid #ced4da; /* Borde común */
+    border-radius: 50%; /* Hace que el div sea redondo */
+    height: 30px; /* Altura del div */
+    width: 30px;  /* Ancho del div */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0; /* Elimina el padding para mantener el tamaño redondo */
+    text-align: center;
+    font-size: 1rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.disponible {
+    background-color: #f0f8ff; /* Color para Disponible */
+}
+
+.reservado {
+    background-color: #f0f8ff; /* Color para Reservado */
+    color: #000000; /* Color de texto para Reservado */
+    font-weight: 600;
+}
+
+.vendido {
+    background-color: #f0f8ff; /* Color para Vendido */
+    color: #FF6700; /* Color de texto para Vendido */
+    font-weight: 600;
+
+}
+
+.reservado::after, .vendido::after {
+    color: #000000; /* Color para el texto en Reservado y Vendido */
+    font-size: 1.6rem;
+    font-weight: 600;
+}

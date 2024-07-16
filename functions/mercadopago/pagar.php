@@ -1,7 +1,7 @@
 <?php
 // Habilitar visualización de errores
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 
 date_default_timezone_set('America/Bogota');
 
@@ -12,8 +12,7 @@ $_SESSION['transaction_id'] = $codigoTransaccion;
 
 // Incluir el archivo de configuración de la base de datos y Mercado Pago SDK
 require_once '../../vendor/autoload.php';
-require_once '../../config/Database.php'; // Asegúrate de tener el archivo con la función getDatabaseConnection()
-
+require_once  '../../config/database.php';
 // Función para sanitizar entrada eliminando espacios, puntos, comas y signo $
 function sanitizeInput($input)
 {
@@ -52,6 +51,29 @@ function guardarTransaccionYNumeros($codigoTransaccion, $numerosSeleccionados)
     }
 }
 
+function actualizarEstadoNumeros($numerosSeleccionados)
+{
+    // Obtener conexión a la base de datos
+    $conexion = getDatabaseConnection();
+
+    try {
+        // Preparar la consulta para actualizar los números disponibles
+        $stmt = $conexion->prepare("UPDATE numeros_disponibles SET vendido = 'p' WHERE numero_disponible = :numero");
+
+        // Actualizar cada número seleccionado
+        foreach ($numerosSeleccionados as $numero) {
+            $stmt->bindParam(":numero", $numero);
+            $stmt->execute();
+        }
+    } catch (PDOException $e) {
+        // Manejar cualquier error de PDO aquí
+        echo "Error al actualizar estado de números disponibles: " . $e->getMessage();
+    }
+
+    // Cerrar la conexión
+    $conexion = null;
+}
+
 // Verificar si se ha enviado el formulario usando el método POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Sanitizar y obtener los datos del formulario
@@ -79,6 +101,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Guardar la transacción y los números en la base de datos
     guardarTransaccionYNumeros($codigoTransaccion, $numerosSeleccionados);
 
+    //marca el número como reservado
+    actualizarEstadoNumeros($numerosSeleccionados);
+
 } else {
     // Si no se envió el formulario por el método POST, mostrar un mensaje de error y salir
     echo "No se recibieron datos del formulario.";
@@ -87,6 +112,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 // Establecer el Access Token de Mercado Pago
 MercadoPago\SDK::setAccessToken("APP_USR-3036319224447166-070917-70a8a1acfc645c08769849f0619574b6-1736789621");
+// MercadoPago\SDK::setAccessToken("APP_USR-8464976437628084-070914-1eeb0a20bf921cb8a50994496ff583af-1677111888464976437628084"); //pruduccion
 
 // Crear una preferencia de pago
 $preference = new MercadoPago\Preference();
@@ -123,7 +149,7 @@ $preference->payment_methods = array(
 );
 
 // URL base de tu aplicación
-$base_url = "https://localhost/caballosrevelo/functions/mercadopago/";
+$base_url = "http://localhost/caballosrevelo/functions/mercadopago/";
 
 // URL de redirección de éxito
 $redirect_url_success = $base_url . "pay-success.php";

@@ -8,16 +8,25 @@ include '../../config/database.php';
 function obtenerTotalVentas()
 {
     try {
+        // Obtener la conexión a la base de datos
         $pdo = getDatabaseConnection();
-        $stmt = $pdo->query("SELECT SUM(total_pagado) as total FROM ventas");
+        
+        // Preparar la consulta SQL para contar los registros en la tabla numeros_vendidos
+        $stmt = $pdo->query("SELECT COUNT(*) as total FROM numeros_vendidos");
+        
+        // Ejecutar la consulta y obtener el resultado
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['total'];
+        
+        // Multiplicar la cantidad de registros por 35,000
+        $totalVentas = $result['total'] * 35000;
+        
+        // Retornar el total de ventas
+        return $totalVentas;
     } catch (Exception $e) {
         // Manejo de errores
         return 'Error: ' . $e->getMessage();
     }
 }
-
 // funcion para obtener numeros vendidos
 function obtenerTotalNumerosVendidos()
 {
@@ -126,7 +135,7 @@ function obtenerClientes()
 {
     try {
         $pdo = getDatabaseConnection();
-        $stmt = $pdo->query("SELECT id_cliente, nombre_cliente, celular_cliente, correo_cliente, departamento_cliente, ciudad_cliente FROM clientes");
+        $stmt = $pdo->query("SELECT id_cliente, nombre_cliente, celular_cliente, correo_cliente, departamento_cliente, ciudad_cliente FROM clientes order by id_cliente DESC");
         $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $clientes;
     } catch (Exception $e) {
@@ -174,7 +183,7 @@ function obtenerDetalleVentas()
         INNER JOIN
             clientes
         ON
-            ventas.id_cliente = clientes.id_cliente
+            ventas.id_cliente = clientes.id_cliente order by ventas.id_venta DESC
         ");
         $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $clientes;
@@ -203,8 +212,23 @@ FROM
 INNER JOIN
     clientes ON ventas.id_cliente = clientes.id_cliente
 INNER JOIN
-    numeros_vendidos ON ventas.id_venta = numeros_vendidos.id_venta;
+    numeros_vendidos ON ventas.id_venta = numeros_vendidos.id_venta order by ventas.id_venta DESC;
         ");
+        $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $clientes;
+    } catch (Exception $e) {
+        echo 'Error: ' . $e->getMessage();
+        return [];
+    }
+}
+
+
+// obetenr repaldo
+function obtenerRespaldo()
+{
+    try {
+        $pdo = getDatabaseConnection();
+        $stmt = $pdo->query("SELECT id, codigo_transaccion, numero_seleccionado, fecha_registro, nombre, celular, correo, departamento, ciudad from transacciones_numeros order by id DESC");
         $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $clientes;
     } catch (Exception $e) {

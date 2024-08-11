@@ -29,13 +29,13 @@ function sanitizeInput($input)
 
 
 // Función para guardar la transacción y los números en la base de datos
-function guardarTransaccionYNumeros($codigoTransaccion, $numerosSeleccionados)
+function guardarTransaccionYNumeros($codigoTransaccion, $numerosSeleccionados, $nombreCompleto, $celular, $correo, $departamento, $ciudad)
 {
     try {
         $pdo = getDatabaseConnection();
 
         // Preparar la consulta para insertar cada número seleccionado
-        $stmt = $pdo->prepare("INSERT INTO transacciones_numeros (codigo_transaccion, numero_seleccionado) VALUES (:codigoTransaccion, :numeroSeleccionado)");
+        $stmt = $pdo->prepare("INSERT INTO transacciones_numeros (codigo_transaccion, numero_seleccionado, nombre, celular, correo, departamento, ciudad) VALUES (:codigoTransaccion, :numeroSeleccionado, :nombre, :celular, :correo, :departamento, :ciudad)");
 
         // Recorrer cada número seleccionado y ejecutar la consulta preparada
         foreach ($numerosSeleccionados as $numero) {
@@ -43,6 +43,11 @@ function guardarTransaccionYNumeros($codigoTransaccion, $numerosSeleccionados)
             $stmt->execute([
                 ':codigoTransaccion' => $codigoTransaccion,
                 ':numeroSeleccionado' => $numero,
+                ':nombre' => $nombreCompleto,
+                ':celular' => $celular,
+                ':correo' => $correo,
+                ':departamento' => $departamento,
+                ':ciudad' => $ciudad
             ]);
         }
     } catch (PDOException $e) {
@@ -99,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $codigoTransaccion = uniqid();
 
     // Guardar la transacción y los números en la base de datos
-    guardarTransaccionYNumeros($codigoTransaccion, $numerosSeleccionados);
+    guardarTransaccionYNumeros($codigoTransaccion, $numerosSeleccionados, $nombreCompleto, $celular, $correo, $departamento, $ciudad);
 
     //marca el número como reservado
     actualizarEstadoNumeros($numerosSeleccionados);

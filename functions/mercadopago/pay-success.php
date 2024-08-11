@@ -122,7 +122,27 @@ function actualizarEstadoNumeros($numerosSeleccionados)
         // Manejar cualquier error de PDO aquí
         echo "Error al actualizar estado de números disponibles: " . $e->getMessage();
         exit("Estimado usuario, hubo un error con su pedido, por favor contacte nuestra linea de WhatsApp. Error 0002");
+    }
 
+    // Cerrar la conexión
+    $conexion = null;
+}
+
+// funcion para eliminar los numeros de las transacciones
+function EliminarNumerosTransaccion($codigoTransaccion)
+{
+    // Obtener conexión a la base de datos
+    $conexion = getDatabaseConnection();
+
+    try {
+        // Preparar la consulta para eliminar los números vendidos
+        $stmt = $conexion->prepare("DELETE FROM transacciones_numeros WHERE codigo_transaccion = :codigo_transaccion");
+        $stmt->bindParam(":codigo_transaccion", $codigoTransaccion);
+        $stmt->execute();
+    } catch (PDOException $e) {
+        // Manejar cualquier error de PDO aquí
+        echo "Error al eliminar la transaccion con los numeros: " . $e->getMessage();
+        exit(" Estimado usuario, hubo un error con su pedido, por favor contacte nuestra linea de WhatsApp. Error 0005");
     }
 
     // Cerrar la conexión
@@ -201,6 +221,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             insertarNumerosVendidos($idVenta, $numerosSeleccionados);
             actualizarEstadoNumeros($numerosSeleccionados);
             enviarCorreo($codigoTransaccion, $fecha_venta, $nombreCompleto, $totalPagar, $correo, $numerosSeleccionados);
+            EliminarNumerosTransaccion($codigoTransaccion);
         }
 
         // Cerrar la conexión
@@ -214,11 +235,12 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     }
 } else {
     // Si no se envió el formulario por el método GET, podrías redirigir o mostrar un mensaje de error.
-    exit("Estimado usuario, hubo un error con su pedido, por favor contacte nuestra linea de WhatsApp. Error 004");    
+    exit("Estimado usuario, hubo un error con su pedido, por favor contacte nuestra linea de WhatsApp. Error 004");
 }
 
 
-function enviarCorreo($codigoTransaccion, $fecha_venta, $nombreCompleto, $totalPagar, $correo, $numerosSeleccionados) {
+function enviarCorreo($codigoTransaccion, $fecha_venta, $nombreCompleto, $totalPagar, $correo, $numerosSeleccionados)
+{
 
     $mail = new PHPMailer(true);
     

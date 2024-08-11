@@ -85,6 +85,7 @@ if (!isset($_SESSION['user_id'])) {
                         <a class="collapse-item" href="generar-venta.php">Generar una Venta</a>
                         <a class="collapse-item" href="detalle-ventas.php">Detalle de Ventas</a>
                         <a class="collapse-item" href="numeros-vendidos.php">Números vendidos</a>
+                        <a class="collapse-item" href="respaldo.php">Respaldo</a>
                     </div>
                 </div>
             </li>

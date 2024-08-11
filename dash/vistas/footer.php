@@ -60,6 +60,7 @@
 
 <!-- script del main -->
 <script src="../js/main.js"></script>
+<script src="../../js/forzar-venta.js"></script>
 
 <!-- script departamentos -->
 <script src="../../js/departamentos.js"></script>
